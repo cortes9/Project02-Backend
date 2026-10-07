@@ -14,3 +14,7 @@ Backend tests start an isolated PostgreSQL container. They do not use Supabase c
 ```bash
 bash ./gradlew test
 ```
+
+## Continuous integration
+
+Pull requests targeting `main` run the backend test suite in GitHub Actions using the `Backend Tests` workflow. The tests use Testcontainers to start PostgreSQL with the GitHub-hosted runner's Docker daemon, so no database service, Supabase credentials, or repository secrets are required.
