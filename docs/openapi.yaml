@@ -1,0 +1,1003 @@
+openapi: 3.0.3
+
+info:
+  title: Study Group Finder API
+  version: 1.0.0
+  description: >
+    REST API that helps college students discover, create, and join
+    study sessions based on courses, buildings, times, and available capacity.
+
+tags:
+  - name: Study Sessions
+    description: Operations for browsing and managing study sessions
+
+  - name: Courses
+    description: Operations for course information
+
+  - name: Buildings
+    description: Operations for building information
+
+  - name: Users
+    description: Operations for user and administrator management
+
+
+paths:
+
+  /api/v1/study-sessions:
+    get:
+      tags:
+        - Study Sessions
+      summary: List study sessions
+      description: >
+        Returns a paginated list of study sessions.
+        Results may be filtered and sorted.
+      operationId: getStudySessions
+
+      parameters:
+        - name: page
+          in: query
+          description: Page number to return
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+
+        - name: size
+          in: query
+          description: Number of study sessions per page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+
+        - name: course
+          in: query
+          description: Filter by course
+          required: false
+          schema:
+            type: string
+
+        - name: building
+          in: query
+          description: Filter by building
+          required: false
+          schema:
+            type: string
+
+        - name: deliveryMode
+          in: query
+          description: Filter by delivery mode
+          required: false
+          schema:
+            type: string
+            enum:
+              - IN_PERSON
+              - REMOTE
+              - ASYNC
+
+        - name: status
+          in: query
+          description: Filter by study session status
+          required: false
+          schema:
+            type: string
+
+        - name: startTimeFrom
+          in: query
+          description: Return sessions starting at or after this time
+          required: false
+          schema:
+            type: string
+            format: date-time
+
+        - name: startTimeTo
+          in: query
+          description: Return sessions starting at or before this time
+          required: false
+          schema:
+            type: string
+            format: date-time
+
+        - name: sort
+          in: query
+          description: Sort results, for example startTime,asc
+          required: false
+          schema:
+            type: string
+            example: startTime,asc
+
+      responses:
+        '200':
+          description: Study sessions returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudySessionPage'
+
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags:
+        - Study Sessions
+      summary: Create a study session
+      description: Creates a study session for the authenticated user.
+      operationId: createStudySession
+
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateStudySessionRequest'
+
+      responses:
+        '201':
+          description: Study session created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudySession'
+
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+
+  /api/v1/study-sessions/{sessionId}:
+    parameters:
+      - name: sessionId
+        in: path
+        required: true
+        description: ID of the study session
+        schema:
+          type: integer
+          format: int64
+
+    get:
+      tags:
+        - Study Sessions
+      summary: Get one study session
+      operationId: getStudySessionById
+
+      responses:
+        '200':
+          description: Study session returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudySession'
+
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags:
+        - Study Sessions
+      summary: Replace a study session
+      description: >
+        Completely replaces a study session owned by the authenticated user.
+      operationId: replaceStudySession
+
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplaceStudySessionRequest'
+
+      responses:
+        '200':
+          description: Study session replaced successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudySession'
+
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    patch:
+      tags:
+        - Study Sessions
+      summary: Partially update a study session
+      description: >
+        Updates selected fields of a study session owned by the authenticated user.
+      operationId: updateStudySession
+
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStudySessionRequest'
+
+      responses:
+        '200':
+          description: Study session updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudySession'
+
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - Study Sessions
+      summary: Delete a study session
+      description: Deletes a study session owned by the authenticated user.
+      operationId: deleteStudySession
+
+      security:
+        - bearerAuth: []
+
+      responses:
+        '204':
+          description: Study session deleted successfully
+
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+
+  /api/v1/study-sessions/{sessionId}/join:
+    post:
+      tags:
+        - Study Sessions
+      summary: Join a study session
+      description: >
+        Adds the authenticated user to the study session if capacity is available.
+      operationId: joinStudySession
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          description: ID of the study session
+          schema:
+            type: integer
+            format: int64
+
+      responses:
+        '204':
+          description: User joined the study session successfully
+
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+
+  /api/v1/study-sessions/{sessionId}/leave:
+    delete:
+      tags:
+        - Study Sessions
+      summary: Leave a study session
+      description: Removes the authenticated user from the study session.
+      operationId: leaveStudySession
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          description: ID of the study session
+          schema:
+            type: integer
+            format: int64
+
+      responses:
+        '204':
+          description: User left the study session successfully
+
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+
+  /api/v1/courses:
+    get:
+      tags:
+        - Courses
+      summary: List courses
+      description: Returns courses with optional subject filtering.
+      operationId: getCourses
+
+      parameters:
+        - name: subject
+          in: query
+          required: false
+          description: Filter courses by subject
+          schema:
+            type: string
+            example: CS
+
+      responses:
+        '200':
+          description: Courses returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Course'
+
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+
+  /api/v1/buildings:
+    get:
+      tags:
+        - Buildings
+      summary: List buildings
+      operationId: getBuildings
+
+      responses:
+        '200':
+          description: Buildings returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Building'
+
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+
+  /api/v1/users/me:
+    delete:
+      tags:
+        - Users
+      summary: Delete current user account
+      description: >
+        Deletes the authenticated user's account and associated application data.
+      operationId: deleteCurrentUser
+
+      security:
+        - bearerAuth: []
+
+      responses:
+        '204':
+          description: User account deleted successfully
+
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+
+  /api/v1/users:
+    get:
+      tags:
+        - Users
+      summary: List users
+      description: Administrator-only paginated user list.
+      operationId: getUsers
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - name: page
+          in: query
+          required: false
+          description: Page number to return
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+
+        - name: size
+          in: query
+          required: false
+          description: Number of users per page
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+
+      responses:
+        '200':
+          description: Users returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPage'
+
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+
+  /api/v1/users/{userId}:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        description: ID of the user
+        schema:
+          type: integer
+          format: int64
+
+    get:
+      tags:
+        - Users
+      summary: Get one user
+      description: Administrator-only operation.
+      operationId: getUserById
+
+      security:
+        - bearerAuth: []
+
+      responses:
+        '200':
+          description: User returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    patch:
+      tags:
+        - Users
+      summary: Update user administrator status
+      description: Administrator-only operation.
+      operationId: updateUser
+
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - Users
+      summary: Delete a user
+      description: >
+        Administrator-only operation that deletes the user and associated data.
+      operationId: deleteUser
+
+      security:
+        - bearerAuth: []
+
+      responses:
+        '204':
+          description: User deleted successfully
+
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+
+  schemas:
+
+    StudySession:
+      type: object
+      properties:
+        sessionId:
+          type: integer
+          format: int64
+
+        creatorId:
+          type: integer
+          format: int64
+
+        courseId:
+          type: integer
+          format: int64
+
+        buildingId:
+          type: integer
+          format: int64
+          nullable: true
+
+        deliveryMode:
+          type: string
+          enum:
+            - IN_PERSON
+            - REMOTE
+            - ASYNC
+
+        startTime:
+          type: string
+          format: date-time
+
+        endTime:
+          type: string
+          format: date-time
+
+        capacity:
+          type: integer
+          minimum: 1
+
+        description:
+          type: string
+          nullable: true
+
+        status:
+          type: string
+
+        participantCount:
+          type: integer
+          minimum: 0
+
+
+    CreateStudySessionRequest:
+      type: object
+      required:
+        - courseId
+        - deliveryMode
+        - startTime
+        - endTime
+        - capacity
+
+      properties:
+        courseId:
+          type: integer
+          format: int64
+
+        buildingId:
+          type: integer
+          format: int64
+          nullable: true
+
+        deliveryMode:
+          type: string
+          enum:
+            - IN_PERSON
+            - REMOTE
+            - ASYNC
+
+        startTime:
+          type: string
+          format: date-time
+
+        endTime:
+          type: string
+          format: date-time
+
+        capacity:
+          type: integer
+          minimum: 1
+
+        description:
+          type: string
+          nullable: true
+
+
+    ReplaceStudySessionRequest:
+      type: object
+      required:
+        - courseId
+        - deliveryMode
+        - startTime
+        - endTime
+        - capacity
+        - status
+
+      properties:
+        courseId:
+          type: integer
+          format: int64
+
+        buildingId:
+          type: integer
+          format: int64
+          nullable: true
+
+        deliveryMode:
+          type: string
+          enum:
+            - IN_PERSON
+            - REMOTE
+            - ASYNC
+
+        startTime:
+          type: string
+          format: date-time
+
+        endTime:
+          type: string
+          format: date-time
+
+        capacity:
+          type: integer
+          minimum: 1
+
+        description:
+          type: string
+          nullable: true
+
+        status:
+          type: string
+
+
+    UpdateStudySessionRequest:
+      type: object
+      description: >
+        Contains only the study-session fields that should be changed.
+
+      properties:
+        courseId:
+          type: integer
+          format: int64
+
+        buildingId:
+          type: integer
+          format: int64
+          nullable: true
+
+        deliveryMode:
+          type: string
+          enum:
+            - IN_PERSON
+            - REMOTE
+            - ASYNC
+
+        startTime:
+          type: string
+          format: date-time
+
+        endTime:
+          type: string
+          format: date-time
+
+        capacity:
+          type: integer
+          minimum: 1
+
+        description:
+          type: string
+          nullable: true
+
+        status:
+          type: string
+
+
+    Course:
+      type: object
+      properties:
+        courseId:
+          type: integer
+          format: int64
+
+        courseCode:
+          type: string
+
+        subject:
+          type: string
+
+        courseName:
+          type: string
+
+
+    Building:
+      type: object
+      properties:
+        buildingId:
+          type: integer
+          format: int64
+
+        buildingName:
+          type: string
+
+        roomNumber:
+          type: string
+          nullable: true
+
+
+    Major:
+      type: object
+      properties:
+        majorId:
+          type: integer
+          format: int64
+
+        majorName:
+          type: string
+
+
+    User:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+
+        oauthSubject:
+          type: string
+
+        name:
+          type: string
+
+        email:
+          type: string
+          format: email
+
+        studentYear:
+          type: string
+          nullable: true
+
+        majorId:
+          type: integer
+          format: int64
+          nullable: true
+
+        isAdmin:
+          type: boolean
+
+
+    UpdateUserRequest:
+      type: object
+      required:
+        - isAdmin
+
+      properties:
+        isAdmin:
+          type: boolean
+
+
+    StudySessionPage:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudySession'
+
+        page:
+          type: integer
+
+        size:
+          type: integer
+
+        totalElements:
+          type: integer
+          format: int64
+
+        totalPages:
+          type: integer
+
+
+    UserPage:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+
+        page:
+          type: integer
+
+        size:
+          type: integer
+
+        totalElements:
+          type: integer
+          format: int64
+
+        totalPages:
+          type: integer
+
+
+    ProblemDetails:
+      type: object
+      description: RFC 9457 Problem Details error response
+
+      properties:
+        type:
+          type: string
+          format: uri
+
+        title:
+          type: string
+
+        status:
+          type: integer
+
+        detail:
+          type: string
+
+        instance:
+          type: string
+          format: uri
+
+
+  responses:
+
+    BadRequest:
+      description: Invalid request
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+
+    Unauthorized:
+      description: Authentication is missing or invalid
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+
+    Forbidden:
+      description: User does not have permission to perform this action
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+
+    NotFound:
+      description: Requested resource was not found
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+
+    Conflict:
+      description: Request conflicts with the current state of the resource
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+
+    InternalServerError:
+      description: Unexpected server error
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
