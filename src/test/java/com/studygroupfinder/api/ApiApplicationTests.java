@@ -1,3 +1,5 @@
+package com.studygroupfinder.api;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -16,3 +18,5 @@ class ApiApplicationTests {
 	@Test
 	void contextLoads() {
 	}
+
+}
