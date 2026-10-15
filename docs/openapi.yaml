@@ -684,11 +684,22 @@ components:
         - startTime
         - endTime
         - capacity
+        - majorIds
 
       properties:
         courseId:
           type: integer
           format: int64
+
+        majorIds:
+            type: array
+            description: Majors selected for the study session.
+            minItems: 1
+            uniqueItems: true
+            items:
+              type: integer
+              format: int64
+              minimum: 1
 
         buildingId:
           type: integer
