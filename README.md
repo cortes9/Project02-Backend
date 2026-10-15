@@ -30,6 +30,7 @@ docker run --rm -p 8080:8080 \
   -e SUPABASE_DB_URL='<your-supabase-database-url>' \
   -e SUPABASE_DB_USERNAME='<your-supabase-database-username>' \
   -e SUPABASE_DB_PASSWORD='<your-supabase-database-password>' \
+  -e GOOGLE_CLIENT_ID='<your-google-client-id>' \
   study-group-finder-api
 ```
 
@@ -41,7 +42,7 @@ The root-level `render.yaml` defines a Docker web service deployed from `main`. 
 
 1. Authorize Render to access the GitHub repository `cortes9/Project02-Backend`.
 2. Create a new Blueprint from the repository. Render reads `render.yaml`, builds the root `Dockerfile`, and deploys the `main` branch.
-3. When prompted, enter private values for `SUPABASE_DB_URL`, `SUPABASE_DB_USERNAME`, and `SUPABASE_DB_PASSWORD`.
+3. When prompted, enter private values for `SUPABASE_DB_URL`, `SUPABASE_DB_USERNAME`, `SUPABASE_DB_PASSWORD`, and `GOOGLE_CLIENT_ID`.
 4. Confirm that the health-check path is `/actuator/health`, then trigger the initial deployment.
 5. Open the generated HTTPS URL and verify that `/actuator/health` returns an `UP` response.
 
@@ -49,7 +50,7 @@ To create the service manually instead of through the Blueprint:
 
 1. Choose **New > Web Service** in the Render dashboard and connect `cortes9/Project02-Backend`.
 2. Select `main` as the branch and Docker as the runtime. Use the repository's root `Dockerfile`.
-3. Add private values for `SUPABASE_DB_URL`, `SUPABASE_DB_USERNAME`, and `SUPABASE_DB_PASSWORD`.
+3. Add private values for `SUPABASE_DB_URL`, `SUPABASE_DB_USERNAME`, `SUPABASE_DB_PASSWORD`, and `GOOGLE_CLIENT_ID`.
 4. Set `/actuator/health` as the health-check path and deploy the service.
 5. Verify the generated HTTPS URL by opening its `/actuator/health` endpoint.
 
