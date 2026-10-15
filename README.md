@@ -57,6 +57,18 @@ Render supplies `PORT` at runtime; the application uses `8080` only when `PORT` 
 
 After deployment, record the real Render HTTPS URL in the team's deployment documentation. Do not add a placeholder URL. The Android application should use that HTTPS URL as its API base URL.
 
+### Deployed API
+
+The backend is deployed at:
+
+`https://study-group-finder-api-bm09.onrender.com`
+
+Health check:
+
+`https://study-group-finder-api-bm09.onrender.com/actuator/health`
+
+The Android application should use `https://study-group-finder-api-bm09.onrender.com/api/v1/` as its API base URL.
+
 ## Continuous integration
 
 Pull requests targeting `main` run the backend test suite in GitHub Actions using the `Backend Tests` workflow. The tests use Testcontainers to start PostgreSQL with the GitHub-hosted runner's Docker daemon, so no database service, Supabase credentials, or repository secrets are required.
