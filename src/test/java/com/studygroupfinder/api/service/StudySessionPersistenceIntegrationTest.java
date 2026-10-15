@@ -180,9 +180,10 @@ class StudySessionPersistenceIntegrationTest {
 
         // Add a test user, not a real student.
         jdbcTemplate.update(
-                "INSERT INTO \"USER\" (user_id, oauth_subject) VALUES (?, ?)",
+                "INSERT INTO \"USER\" (user_id, oauth_subject, is_admin) VALUES (?, ?, ?)",
                 42L,
-                "integration-test-subject"
+                "integration-test-subject",
+                false
         );
     }
 
