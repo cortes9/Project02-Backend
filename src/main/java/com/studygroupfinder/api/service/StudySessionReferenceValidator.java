@@ -1,6 +1,7 @@
 
 package com.studygroupfinder.api.service;
 
+import com.studygroupfinder.api.error.ResourceNotFoundException;
 import com.studygroupfinder.api.repository.BuildingReferenceRepository;
 import com.studygroupfinder.api.repository.CourseReferenceRepository;
 import com.studygroupfinder.api.repository.MajorReferenceRepository;
@@ -36,12 +37,12 @@ public class StudySessionReferenceValidator {
 
         // Reject a missing or nonexistent course.
         if (courseId == null || !courseRepository.existsById(courseId)) {
-            throw new IllegalArgumentException("Course does not exist");
+            throw new ResourceNotFoundException("Course does not exist");
         }
 
         // A null building is permitted for remote or asynchronous sessions.
         if (buildingId != null && !buildingRepository.existsById(buildingId)) {
-            throw new IllegalArgumentException("Building does not exist");
+            throw new ResourceNotFoundException("Building does not exist");
         }
 
         // Major targets must be provided by a trusted, agreed API contract.
@@ -52,7 +53,7 @@ public class StudySessionReferenceValidator {
         // Check each referenced major before allowing any database inserts.
         for (Long majorId : majorIds) {
             if (majorId == null || !majorRepository.existsById(majorId)) {
-                throw new IllegalArgumentException("Major does not exist");
+                throw new ResourceNotFoundException("Major does not exist");
             }
         }
     }
