@@ -6,6 +6,8 @@ import com.studygroupfinder.api.service.AuthenticatedCreatorResolver;
 import com.studygroupfinder.api.service.StudySessionMajorTargetResolver;
 import com.studygroupfinder.api.service.StudySessionPersistenceService;
 import com.studygroupfinder.api.service.StudySessionService;
+import com.studygroupfinder.api.service.StudySessionQueryService;
+import com.studygroupfinder.api.service.StudySessionManagementService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,7 +49,9 @@ class ApiExceptionHandlerTest {
                 new StudySessionService(),
                 creatorResolver,
                 majorResolver,
-                persistenceService
+                persistenceService,
+                mock(StudySessionQueryService.class),
+                mock(StudySessionManagementService.class)
         );
 
         mockMvc = MockMvcBuilders

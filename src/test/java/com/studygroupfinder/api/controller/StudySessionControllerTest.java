@@ -7,6 +7,8 @@ import com.studygroupfinder.api.entity.StudySession;
 import com.studygroupfinder.api.service.AuthenticatedCreatorResolver;
 import com.studygroupfinder.api.service.StudySessionMajorTargetResolver;
 import com.studygroupfinder.api.service.StudySessionPersistenceService;
+import com.studygroupfinder.api.service.StudySessionQueryService;
+import com.studygroupfinder.api.service.StudySessionManagementService;
 import com.studygroupfinder.api.service.StudySessionService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +32,7 @@ class StudySessionControllerTest {
     private AuthenticatedCreatorResolver creatorResolver;
     private StudySessionMajorTargetResolver majorResolver;
     private StudySessionPersistenceService persistenceService;
+    private StudySessionQueryService queryService;
     private StudySessionController controller;
 
     @BeforeEach
@@ -39,12 +42,15 @@ class StudySessionControllerTest {
         creatorResolver = mock(AuthenticatedCreatorResolver.class);
         majorResolver = mock(StudySessionMajorTargetResolver.class);
         persistenceService = mock(StudySessionPersistenceService.class);
+        queryService = mock(StudySessionQueryService.class);
 
         controller = new StudySessionController(
                 new StudySessionService(),
                 creatorResolver,
                 majorResolver,
-                persistenceService
+                persistenceService,
+                queryService,
+                mock(StudySessionManagementService.class)
         );
     }
 
@@ -177,6 +183,9 @@ class StudySessionControllerTest {
                 eq(42L),
                 eq(List.of(3L, 5L))
         )).thenReturn(savedSession);
+        StudySessionResponse createdResponse =
+                StudySessionResponse.fromEntity(savedSession);
+        when(queryService.findSession(100L)).thenReturn(createdResponse);
 
         ResponseEntity<StudySessionResponse> response =
                 controller.createStudySession(

@@ -8,6 +8,7 @@ import org.springframework.boot.health.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.security.autoconfigure.actuate.web.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -38,6 +39,8 @@ public class SecurityConfig {
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(authorize -> authorize
 						.requestMatchers(EndpointRequest.to(HealthEndpoint.class)).permitAll()
+						.requestMatchers(HttpMethod.GET, "/api/v1/study-sessions").permitAll()
+						.requestMatchers(HttpMethod.GET, "/api/v1/study-sessions/*").permitAll()
 						.anyRequest().authenticated())
 				.exceptionHandling(exceptions -> exceptions
 						.authenticationEntryPoint(authenticationEntryPoint)

@@ -4,6 +4,7 @@ package com.studygroupfinder.api.dto;
 import com.studygroupfinder.api.entity.StudySession;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 // Represents the study session information returned by the API.
 public record StudySessionResponse(
@@ -29,8 +30,25 @@ public record StudySessionResponse(
 
         // Current session status and number of participants.
         String status,
-        Integer participantCount
+        Integer participantCount,
+
+        CourseSummary course,
+        BuildingSummary building,
+        CreatorSummary creator,
+        List<MajorSummary> targetedMajors
 ) {
+
+    public record CourseSummary(Long courseId, String code, String name) {
+    }
+
+    public record BuildingSummary(Long buildingId, String name) {
+    }
+
+    public record CreatorSummary(Long userId, String name) {
+    }
+
+    public record MajorSummary(Long majorId, String name) {
+    }
 
     // Converts a newly saved session entity into the API response.
     // A new session begins with zero participants when creation
@@ -47,7 +65,13 @@ public record StudySessionResponse(
                 session.getCapacity(),
                 session.getDescription(),
                 session.getStatus(),
-                0
+                0,
+                new CourseSummary(session.getCourseId(), null, null),
+                session.getBuildingId() == null
+                        ? null
+                        : new BuildingSummary(session.getBuildingId(), null),
+                new CreatorSummary(session.getCreatorId(), null),
+                List.of()
         );
     }
 }

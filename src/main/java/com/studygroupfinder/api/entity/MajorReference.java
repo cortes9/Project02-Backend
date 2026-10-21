@@ -16,11 +16,18 @@ public class MajorReference {
     @Column(name = "major_id")
     private Long majorId;
 
+    @Column(name = "major_name")
+    private String majorName;
+
     // Required by JPA.
     protected MajorReference() {
     }
 
     public Long getMajorId() {
         return majorId;
+    }
+
+    public String getMajorName() {
+        return majorName;
     }
 }

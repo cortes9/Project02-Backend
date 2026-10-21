@@ -16,11 +16,25 @@ public class CourseReference {
     @Column(name = "course_id")
     private Long courseId;
 
+    @Column(name = "course_code")
+    private String courseCode;
+
+    @Column(name = "course_name")
+    private String courseName;
+
     // Required by JPA when reading existing database records.
     protected CourseReference() {
     }
 
     public Long getCourseId() {
         return courseId;
+    }
+
+    public String getCourseCode() {
+        return courseCode;
+    }
+
+    public String getCourseName() {
+        return courseName;
     }
 }
