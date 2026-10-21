@@ -1,5 +1,8 @@
 package com.studygroupfinder.api;
 
+import com.studygroupfinder.api.error.ProblemDetailsAccessDeniedHandler;
+import com.studygroupfinder.api.error.ProblemDetailsAuthenticationEntryPoint;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.health.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.security.autoconfigure.actuate.web.servlet.EndpointRequest;
@@ -26,14 +29,23 @@ import java.util.List;
 public class SecurityConfig {
 
 	@Bean
-	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	SecurityFilterChain securityFilterChain(
+			HttpSecurity http,
+			ProblemDetailsAuthenticationEntryPoint authenticationEntryPoint,
+			ProblemDetailsAccessDeniedHandler accessDeniedHandler) throws Exception {
 		http
 				.csrf(AbstractHttpConfigurer::disable)
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(authorize -> authorize
 						.requestMatchers(EndpointRequest.to(HealthEndpoint.class)).permitAll()
 						.anyRequest().authenticated())
-				.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
+				.exceptionHandling(exceptions -> exceptions
+						.authenticationEntryPoint(authenticationEntryPoint)
+						.accessDeniedHandler(accessDeniedHandler))
+				.oauth2ResourceServer(oauth2 -> oauth2
+						.authenticationEntryPoint(authenticationEntryPoint)
+						.accessDeniedHandler(accessDeniedHandler)
+						.jwt(Customizer.withDefaults()));
 
 		return http.build();
 	}

@@ -4,6 +4,7 @@ package com.studygroupfinder.api.service;
 import com.studygroupfinder.api.dto.CreateStudySessionRequest;
 import com.studygroupfinder.api.entity.SessionMajor;
 import com.studygroupfinder.api.entity.StudySession;
+import com.studygroupfinder.api.error.ResourceNotFoundException;
 import com.studygroupfinder.api.repository.SessionMajorRepository;
 import com.studygroupfinder.api.repository.StudySessionRepository;
 
@@ -170,12 +171,12 @@ class StudySessionPersistenceServiceTest {
     void validatesReferencesBeforeSaving() {
 
         // Simulate an invalid course being rejected by the validator.
-        doThrow(new IllegalArgumentException("Course does not exist"))
+        doThrow(new ResourceNotFoundException("Course does not exist"))
                 .when(referenceValidator)
                 .validateReferences(1L, null, List.of(3L));
 
         assertThrows(
-                IllegalArgumentException.class,
+                ResourceNotFoundException.class,
                 () -> service.saveSession(
                         validRequest(),
                         42L,

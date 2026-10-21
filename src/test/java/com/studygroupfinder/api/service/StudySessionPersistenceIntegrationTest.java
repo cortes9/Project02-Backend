@@ -1,6 +1,7 @@
 
 package com.studygroupfinder.api.service;
 
+import com.studygroupfinder.api.error.ResourceNotFoundException;
 import com.studygroupfinder.api.dto.CreateStudySessionRequest;
 import com.studygroupfinder.api.entity.StudySession;
 import com.studygroupfinder.api.repository.SessionMajorRepository;
@@ -251,7 +252,7 @@ class StudySessionPersistenceIntegrationTest {
 
         // An unknown course must stop creation.
         assertThrows(
-                IllegalArgumentException.class,
+                ResourceNotFoundException.class,
                 () -> persistenceService.saveSession(
                         request,
                         42L,

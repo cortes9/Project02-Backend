@@ -1,6 +1,7 @@
 
 package com.studygroupfinder.api.service;
 
+import com.studygroupfinder.api.error.ResourceNotFoundException;
 import com.studygroupfinder.api.repository.BuildingReferenceRepository;
 import com.studygroupfinder.api.repository.CourseReferenceRepository;
 import com.studygroupfinder.api.repository.MajorReferenceRepository;
@@ -67,7 +68,7 @@ class StudySessionReferenceValidatorTest {
         when(courseRepository.existsById(1L)).thenReturn(false);
 
         assertThrows(
-                IllegalArgumentException.class,
+                ResourceNotFoundException.class,
                 () -> validator.validateReferences(1L, null, List.of())
         );
     }
@@ -80,7 +81,7 @@ class StudySessionReferenceValidatorTest {
         when(buildingRepository.existsById(2L)).thenReturn(false);
 
         assertThrows(
-                IllegalArgumentException.class,
+                ResourceNotFoundException.class,
                 () -> validator.validateReferences(1L, 2L, List.of())
         );
     }
@@ -93,7 +94,7 @@ class StudySessionReferenceValidatorTest {
         when(majorRepository.existsById(3L)).thenReturn(false);
 
         assertThrows(
-                IllegalArgumentException.class,
+                ResourceNotFoundException.class,
                 () -> validator.validateReferences(1L, null, List.of(3L))
         );
     }
