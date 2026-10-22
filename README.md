@@ -73,3 +73,25 @@ The Android application should use `https://study-group-finder-api-bm09.onrender
 ## Continuous integration
 
 Pull requests targeting `main` run the backend test suite in GitHub Actions using the `Backend Tests` workflow. The tests use Testcontainers to start PostgreSQL with the GitHub-hosted runner's Docker daemon, so no database service, Supabase credentials, or repository secrets are required.
+
+## Seed demo data
+
+The manual PostgreSQL seed script is located at [`scripts/seed-demo-data.sql`](scripts/seed-demo-data.sql). All records are fictional and use reserved negative identifiers and recognizable `demo` values. The script is never run automatically by Spring Boot. It is transactional and idempotent, so running it more than once updates the same demo records without creating duplicates.
+
+Review the target database before executing the script. To use the Supabase SQL Editor:
+
+1. Open the intended Supabase project and select **SQL Editor**.
+2. Copy the complete contents of `scripts/seed-demo-data.sql` into a new query.
+3. Confirm the selected project is the intended demo target, then run the query.
+
+For a PostgreSQL database accessible through `psql`, run this generic command from the repository root and supply the connection information securely when prompted or through your normal local configuration:
+
+```bash
+psql '<database-connection-string>' -f scripts/seed-demo-data.sql
+```
+
+After seeding the deployed database, verify the public list endpoint:
+
+```text
+https://study-group-finder-api-bm09.onrender.com/api/v1/study-sessions?limit=20&offset=0
+```
