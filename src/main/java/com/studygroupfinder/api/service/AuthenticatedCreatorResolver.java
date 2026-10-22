@@ -23,6 +23,11 @@ public class AuthenticatedCreatorResolver {
     // Never accepts a creator ID supplied in the HTTP request body.
     public Long resolveCreatorId(JwtAuthenticationToken authentication) {
 
+        return resolveUser(authentication).getUserId();
+    }
+
+    public User resolveUser(JwtAuthenticationToken authentication) {
+
         // Reject missing or unauthenticated identities.
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new IllegalStateException(
@@ -41,12 +46,9 @@ public class AuthenticatedCreatorResolver {
 
         // The user must already exist in our database.
         // Creating new Google user profiles belongs to another issue.
-        User user = userRepository.findByOauthSubject(oauthSubject)
+        return userRepository.findByOauthSubject(oauthSubject)
                 .orElseThrow(() -> new IllegalStateException(
                         "Authenticated user has no existing profile"
                 ));
-
-        // Return the trusted database ID used by STUDY_SESSION.creator_id.
-        return user.getUserId();
     }
 }

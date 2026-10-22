@@ -30,83 +30,51 @@ paths:
       summary: List study sessions
       description: >
         Returns a paginated list of study sessions.
-        Results may be filtered and sorted.
+        Results are ordered by start time and session ID.
       operationId: getStudySessions
 
       parameters:
-        - name: page
+        - name: course_code
           in: query
-          description: Page number to return
+          description: Exact course code, matched case-insensitively
+          required: false
+          schema:
+            type: string
+
+        - name: building_id
+          in: query
+          description: Building identifier
+          required: false
+          schema:
+            type: integer
+            format: int64
+
+        - name: date
+          in: query
+          description: UTC calendar date during which the session occurs
+          required: false
+          schema:
+            type: string
+            format: date
+
+        - name: limit
+          in: query
+          description: Maximum number of sessions to return
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+
+        - name: offset
+          in: query
+          description: Number of sessions to skip
           required: false
           schema:
             type: integer
             minimum: 0
             default: 0
-
-        - name: size
-          in: query
-          description: Number of study sessions per page
-          required: false
-          schema:
-            type: integer
-            minimum: 1
-            default: 20
-
-        - name: course
-          in: query
-          description: Filter by course
-          required: false
-          schema:
-            type: string
-
-        - name: building
-          in: query
-          description: Filter by building
-          required: false
-          schema:
-            type: string
-
-        - name: deliveryMode
-          in: query
-          description: Filter by delivery mode
-          required: false
-          schema:
-            type: string
-            enum:
-              - IN_PERSON
-              - REMOTE
-              - ASYNC
-
-        - name: status
-          in: query
-          description: Filter by study session status
-          required: false
-          schema:
-            type: string
-
-        - name: startTimeFrom
-          in: query
-          description: Return sessions starting at or after this time
-          required: false
-          schema:
-            type: string
-            format: date-time
-
-        - name: startTimeTo
-          in: query
-          description: Return sessions starting at or before this time
-          required: false
-          schema:
-            type: string
-            format: date-time
-
-        - name: sort
-          in: query
-          description: Sort results, for example startTime,asc
-          required: false
-          schema:
-            type: string
-            example: startTime,asc
 
       responses:
         '200':
@@ -282,7 +250,7 @@ paths:
       tags:
         - Study Sessions
       summary: Delete a study session
-      description: Deletes a study session owned by the authenticated user.
+      description: Deletes a study session as its creator or as an administrator.
       operationId: deleteStudySession
 
       security:
@@ -348,7 +316,9 @@ paths:
       tags:
         - Study Sessions
       summary: Leave a study session
-      description: Removes the authenticated user from the study session.
+      description: >
+        Removes the authenticated user from the study session. The operation is
+        idempotent when the user is not currently a member.
       operationId: leaveStudySession
 
       security:
@@ -372,9 +342,6 @@ paths:
 
         '404':
           $ref: '#/components/responses/NotFound'
-
-        '409':
-          $ref: '#/components/responses/Conflict'
 
         '500':
           $ref: '#/components/responses/InternalServerError'
@@ -675,6 +642,60 @@ components:
           type: integer
           minimum: 0
 
+        course:
+          $ref: '#/components/schemas/StudySessionCourseSummary'
+
+        building:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StudySessionBuildingSummary'
+
+        creator:
+          $ref: '#/components/schemas/StudySessionCreatorSummary'
+
+        targetedMajors:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudySessionMajorSummary'
+
+    StudySessionCourseSummary:
+      type: object
+      properties:
+        courseId:
+          type: integer
+          format: int64
+        code:
+          type: string
+        name:
+          type: string
+
+    StudySessionBuildingSummary:
+      type: object
+      properties:
+        buildingId:
+          type: integer
+          format: int64
+        name:
+          type: string
+
+    StudySessionCreatorSummary:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+        name:
+          type: string
+
+    StudySessionMajorSummary:
+      type: object
+      properties:
+        majorId:
+          type: integer
+          format: int64
+        name:
+          type: string
+
 
     CreateStudySessionRequest:
       type: object
@@ -738,7 +759,7 @@ components:
         - startTime
         - endTime
         - capacity
-        - status
+        - majorIds
 
       properties:
         courseId:
@@ -773,8 +794,14 @@ components:
           type: string
           nullable: true
 
-        status:
-          type: string
+        majorIds:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            type: integer
+            format: int64
+            minimum: 1
 
 
     UpdateStudySessionRequest:
@@ -815,8 +842,14 @@ components:
           type: string
           nullable: true
 
-        status:
-          type: string
+        majorIds:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            type: integer
+            format: int64
+            minimum: 1
 
 
     Course:
@@ -910,18 +943,22 @@ components:
           items:
             $ref: '#/components/schemas/StudySession'
 
-        page:
+        limit:
           type: integer
 
-        size:
+        offset:
           type: integer
 
         totalElements:
           type: integer
           format: int64
 
-        totalPages:
+        hasNext:
+          type: boolean
+
+        nextOffset:
           type: integer
+          nullable: true
 
 
     UserPage:

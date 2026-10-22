@@ -40,6 +40,18 @@ public class StudySession {
     @Column(name = "status", nullable = false)
     private String status;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "course_id", insertable = false, updatable = false)
+    private CourseReference course;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "building_id", insertable = false, updatable = false)
+    private BuildingReference building;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "creator_id", insertable = false, updatable = false)
+    private User creator;
+
     public StudySession() {
     }
 
@@ -117,5 +129,17 @@ public class StudySession {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public CourseReference getCourse() {
+        return course;
+    }
+
+    public BuildingReference getBuilding() {
+        return building;
+    }
+
+    public User getCreator() {
+        return creator;
     }
 }

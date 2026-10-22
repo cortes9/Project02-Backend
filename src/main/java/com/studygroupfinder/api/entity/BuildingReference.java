@@ -16,11 +16,18 @@ public class BuildingReference {
     @Column(name = "building_id")
     private Long buildingId;
 
+    @Column(name = "building_name")
+    private String buildingName;
+
     // JPA needs this constructor to load database rows.
     protected BuildingReference() {
     }
 
     public Long getBuildingId() {
         return buildingId;
+    }
+
+    public String getBuildingName() {
+        return buildingName;
     }
 }

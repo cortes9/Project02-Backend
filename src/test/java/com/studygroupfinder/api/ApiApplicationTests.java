@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -64,6 +65,44 @@ class ApiApplicationTests {
 				.andExpect(jsonPath("$.title").value("Unauthorized"))
 				.andExpect(jsonPath("$.status").value(401))
 				.andExpect(jsonPath("$.instance").value("/api/v1/users/me"));
+	}
+
+	@Test
+	void studySessionReadsArePublicAndWritesRemainProtected() throws Exception {
+		mockMvc.perform(get("/api/v1/study-sessions"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.content").isArray());
+
+		mockMvc.perform(post("/api/v1/study-sessions")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content("{}"))
+				.andExpect(status().isUnauthorized())
+				.andExpect(content().contentTypeCompatibleWith(
+						MediaType.APPLICATION_PROBLEM_JSON));
+	}
+
+	@Test
+	void invalidStudySessionListParametersReturnProblemDetails() throws Exception {
+		mockMvc.perform(get("/api/v1/study-sessions").param("limit", "0"))
+				.andExpect(status().isBadRequest())
+				.andExpect(content().contentTypeCompatibleWith(
+						MediaType.APPLICATION_PROBLEM_JSON))
+				.andExpect(jsonPath("$.status").value(400));
+
+		mockMvc.perform(get("/api/v1/study-sessions").param("date", "not-a-date"))
+				.andExpect(status().isBadRequest())
+				.andExpect(content().contentTypeCompatibleWith(
+						MediaType.APPLICATION_PROBLEM_JSON))
+				.andExpect(jsonPath("$.status").value(400));
+	}
+
+	@Test
+	void missingStudySessionDetailIsPublicAndReturnsProblemDetails() throws Exception {
+		mockMvc.perform(get("/api/v1/study-sessions/999999"))
+				.andExpect(status().isNotFound())
+				.andExpect(content().contentTypeCompatibleWith(
+						MediaType.APPLICATION_PROBLEM_JSON))
+				.andExpect(jsonPath("$.status").value(404));
 	}
 
 	@Test

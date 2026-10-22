@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.net.URI;
 import java.util.stream.Collectors;
@@ -48,7 +49,8 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler({
             HttpMessageNotReadableException.class,
-            ConstraintViolationException.class
+            ConstraintViolationException.class,
+            MethodArgumentTypeMismatchException.class
     })
     ResponseEntity<ProblemDetail> handleMalformedRequest(
             Exception exception,

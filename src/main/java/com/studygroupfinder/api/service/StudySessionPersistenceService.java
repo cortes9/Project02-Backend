@@ -84,6 +84,12 @@ public class StudySessionPersistenceService {
             );
         }
 
+        if (request.capacity() == null || request.capacity() < 1) {
+            throw new IllegalArgumentException(
+                    "Capacity must be greater than zero"
+            );
+        }
+
         // Verify that the selected course, optional building,
         // and target majors exist in the database.
         referenceValidator.validateReferences(
