@@ -24,7 +24,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.containsString;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -52,6 +54,33 @@ class ApiApplicationTests {
 				.andExpect(jsonPath("$.status").value("UP"))
 				.andExpect(jsonPath("$.components").doesNotExist())
 				.andExpect(jsonPath("$.details").doesNotExist());
+	}
+
+	@Test
+	void swaggerUiIsPublic() throws Exception {
+		mockMvc.perform(get("/swagger-ui.html"))
+				.andExpect(status().is3xxRedirection())
+				.andExpect(header().string("Location", containsString("/swagger-ui/index.html")));
+	}
+
+	@Test
+	void generatedOpenApiIsPublicAndDescribesSecurityAccurately() throws Exception {
+		mockMvc.perform(get("/v3/api-docs"))
+				.andExpect(status().isOk())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.info.title").value("Study Group Finder API"))
+				.andExpect(jsonPath("$.info.version").value("v1"))
+				.andExpect(jsonPath("$.components.securitySchemes.bearerAuth.type").value("http"))
+				.andExpect(jsonPath("$['paths']['/api/v1/study-sessions']['get']['security']")
+						.doesNotExist())
+				.andExpect(jsonPath("$['paths']['/api/v1/study-sessions']['post']['security'][0].bearerAuth")
+						.isArray())
+				.andExpect(jsonPath("$['paths']['/api/v1/users/me']['get']['security'][0].bearerAuth")
+						.isArray())
+				.andExpect(jsonPath("$.components.schemas.CreateStudySessionRequest.properties.validTimeRange")
+						.doesNotExist())
+				.andExpect(jsonPath("$.components.schemas.UpdateStudySessionRequest.properties.courseIdSet")
+						.doesNotExist());
 	}
 
 	@Test

@@ -1,10 +1,12 @@
 package com.studygroupfinder.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonSetter;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 
+@Schema(description = "Only supplied fields are changed; omitted fields retain their current values.")
 public class UpdateStudySessionRequest {
 
     private Long courseId;
@@ -82,12 +84,20 @@ public class UpdateStudySessionRequest {
     public String getDescription() { return description; }
     public List<Long> getMajorIds() { return majorIds; }
 
+    @Schema(hidden = true)
     public boolean isCourseIdSet() { return courseIdSet; }
+    @Schema(hidden = true)
     public boolean isBuildingIdSet() { return buildingIdSet; }
+    @Schema(hidden = true)
     public boolean isDeliveryModeSet() { return deliveryModeSet; }
+    @Schema(hidden = true)
     public boolean isStartTimeSet() { return startTimeSet; }
+    @Schema(hidden = true)
     public boolean isEndTimeSet() { return endTimeSet; }
+    @Schema(hidden = true)
     public boolean isCapacitySet() { return capacitySet; }
+    @Schema(hidden = true)
     public boolean isDescriptionSet() { return descriptionSet; }
+    @Schema(hidden = true)
     public boolean isMajorIdsSet() { return majorIdsSet; }
 }
