@@ -1,5 +1,6 @@
 package com.studygroupfinder.api.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -21,6 +22,7 @@ public record ReplaceStudySessionRequest(
         @NotEmpty List<@NotNull @Positive Long> majorIds
 ) {
 
+    @Schema(hidden = true)
     @AssertTrue(message = "Start time must be before end time")
     public boolean isValidTimeRange() {
         return startTime == null || endTime == null

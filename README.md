@@ -74,6 +74,19 @@ The Android application should use `https://study-group-finder-api-bm09.onrender
 
 Pull requests targeting `main` run the backend test suite in GitHub Actions using the `Backend Tests` workflow. The tests use Testcontainers to start PostgreSQL with the GitHub-hosted runner's Docker daemon, so no database service, Supabase credentials, or repository secrets are required.
 
+## Swagger and OpenAPI
+
+Interactive Swagger UI is public at:
+
+- Local: `http://localhost:8080/swagger-ui.html`
+- Deployed: `https://study-group-finder-api-bm09.onrender.com/swagger-ui.html`
+
+The generated OpenAPI JSON for the deployed implementation is available at:
+
+`https://study-group-finder-api-bm09.onrender.com/v3/api-docs`
+
+[`docs/openapi.yaml`](docs/openapi.yaml) remains the team's handwritten API contract. The `/v3/api-docs` document is generated at runtime from the implemented Spring controllers, DTOs, validation rules, and OpenAPI annotations.
+
 ## Seed demo data
 
 The manual PostgreSQL seed script is located at [`scripts/seed-demo-data.sql`](scripts/seed-demo-data.sql). All records are fictional and use reserved negative identifiers and recognizable `demo` values. The script is never run automatically by Spring Boot. It is transactional and idempotent, so running it more than once updates the same demo records without creating duplicates.
